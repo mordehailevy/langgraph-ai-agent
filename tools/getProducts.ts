@@ -1,20 +1,30 @@
 import { tool } from "@langchain/core/tools";
+
+type Product = { id: number; title: string; description: string; price: number };
+
 const getProducts = tool(
   async () => {
-    const result = await fetch("https://dummyjson.com/products");
-    const data: any = await result.json()
-    const products = data.products.map((product: any) => ({
-      id: product.id,
-      title: product.title,
-      description: product.description,
-      price: product.price,
-    }));
-    return { products };
+    try {
+      const response = await fetch("https://dummyjson.com/products");
+      if (!response.ok) {
+        return `Could not load products (HTTP ${response.status}).`;
+      }
+      const data = (await response.json()) as { products?: Product[] };
+      const products = (data.products ?? []).map(({ id, title, description, price }) => ({
+        id,
+        title,
+        description,
+        price,
+      }));
+      return JSON.stringify({ products });
+    } catch {
+      return "Could not reach the product catalog.";
+    }
   },
   {
     name: "getProducts",
-    description: "Get a list of products.",
-  }
+    description: "Get the product catalog (id, title, description and price of each product).",
+  },
 );
- 
+
 export default getProducts;

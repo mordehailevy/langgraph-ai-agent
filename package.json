@@ -1,9 +1,16 @@
 {
+  "name": "langgraph-ai-agent",
+  "version": "1.0.0",
+  "description": "AI chat agent built with LangGraph and LangChain: an Express API and chat UI calling live weather and product data through tools.",
   "type": "module",
+  "engines": {
+    "node": ">=18"
+  },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "tsc": "tsc -w",
-    "dev": "nodemon --watch dist --exec node dist/index.js"
+    "dev": "tsx watch index.ts",
+    "start": "tsx index.ts",
+    "build": "tsc",
+    "typecheck": "tsc --noEmit"
   },
   "dependencies": {
     "@langchain/core": "^0.3.80",
@@ -15,8 +22,8 @@
   },
   "devDependencies": {
     "@types/express": "^5.0.6",
-    "nodemon": "^3.1.14",
     "tsx": "^4.19.3",
-    "typescript": "^5.7.3"
+    "typescript": "^5.7.3",
+    "@types/node": "^22.10.0"
   }
 }

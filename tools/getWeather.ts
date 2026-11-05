@@ -1,8 +1,8 @@
 import { tool } from "@langchain/core/tools";
-// ללא schema → הקלט הוא מחרוזת (שם העיר) שמגיעה ישירות לפונקציה.
+// No schema: the input is a plain string (the city name) passed straight to the function.
 const getWeather = tool(
   async (city: string) => {
-    // שלב 1 — ג'יאוקודינג: המרת שם עיר לקואורדינטות.
+    // Step 1: geocoding, turn the city name into coordinates.
     const geoUrl =
       `https://geocoding-api.open-meteo.com/v1/search` +
       `?name=${encodeURIComponent(city)}&count=1&language=en&format=json`;
@@ -18,10 +18,10 @@ const getWeather = tool(
         country: string;
       }>;
     };
-    const place = geo.results?.[0]; // אם אין תוצאה, results לא קיים
+    const place = geo.results?.[0]; // no match: results is undefined
     if (!place) return `City not found: "${city}".`;
 
-    // שלב 2 — שליפת מזג האוויר הנוכחי לפי קו רוחב/אורך.
+    // Step 2: fetch the current weather for those coordinates.
     const { latitude, longitude, name, country } = place;
     const wxUrl =
       `https://api.open-meteo.com/v1/forecast` +
@@ -30,7 +30,7 @@ const getWeather = tool(
     const wxRes = await fetch(wxUrl);
     if (!wxRes.ok) return `Weather API error (${wxRes.status}) for "${city}".`;
 
-    // המבנה: { current: { temperature_2m, relative_humidity_2m, ... } }
+    // Shape: { current: { temperature_2m, relative_humidity_2m, ... } }
     const { current } = (await wxRes.json()) as {
       current: {
         temperature_2m: number;
